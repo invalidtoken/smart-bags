@@ -3,7 +3,7 @@ const bodyparser = require("body-parser");
 let data = require("./data.json");
 let fs = require("fs");
 const app = express();
-const port = 3000;
+var port = process.env.PORT || 3000;
 
 app.get("/", (req, res) => {
   let data = JSON.parse(fs.readFileSync("./data.json", "utf-8"));
