@@ -40,4 +40,9 @@ app.post(
   }
 );
 
+app.get("/empty", (req, res, next) => {
+  fs.writeFileSync("./data.json", JSON.stringify({ locations: [] }));
+  res.sendStatus(200);
+});
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
