@@ -1,9 +1,9 @@
 const express = require("express");
-const bodyparser = require("body-parser");
-let data = require("./data.json");
-let fs = require("fs");
 const app = express();
-var port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
+const path = require("path");
+
+app.use(express.static(path.resolve(__dirname, "../../client", "public")));
 
 app.get("/", (req, res) => {
   let data = JSON.parse(fs.readFileSync("./data.json", "utf-8"));
@@ -45,4 +45,12 @@ app.get("/empty", (req, res, next) => {
   res.sendStatus(200);
 });
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.get("*", (request, response) => {
+  response.sendFile(
+    path.resolve(__dirname, "../../client", "public/index.html")
+  );
+});
+
+app.listen(port, () => {
+  console.log(`Server running on - ${port}`);
+});
