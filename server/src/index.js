@@ -2,23 +2,24 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 8080;
 const path = require("path");
+const fs = require("fs");
 
-app.use(express.static(path.resolve(__dirname, "../../client", "public")));
+const getFilePath = () => path.resolve(__dirname, "data.json");
 
-app.get("/", (req, res) => {
-  let data = JSON.parse(fs.readFileSync("./data.json", "utf-8"));
+app.get("/api/data", (req, res) => {
+  let data = JSON.parse(fs.readFileSync(getFilePath(), "utf-8"));
   res.json({ locations: data.locations, len: data.locations.length });
 });
 
-app.get("/data", (req, res) => {
-  let data = JSON.parse(fs.readFileSync("./data.json", "utf-8"));
+app.get("/api/store-location", (req, res) => {
+  let data = JSON.parse(fs.readFileSync(getFilePath(), "utf-8"));
   data.locations.push(req.query);
-  fs.writeFileSync("./data.json", JSON.stringify(data));
+  fs.writeFileSync(getFilePath(), JSON.stringify(data));
   res.sendStatus(200);
 });
 
 app.post(
-  "/data",
+  "/api/store-location",
   (req, res, next) => {
     // time, lat, lon
     let string = "";
@@ -33,21 +34,23 @@ app.post(
     });
   },
   (req, res) => {
-    let data = JSON.parse(fs.readFileSync("./data.json", "utf-8"));
+    let data = JSON.parse(fs.readFileSync(getFilePath(), "utf-8"));
     data.locations.push(req.body);
     fs.writeFileSync("./data.json", JSON.stringify(data));
     res.sendStatus(200);
   }
 );
 
-app.get("/empty", (req, res, next) => {
-  fs.writeFileSync("./data.json", JSON.stringify({ locations: [] }));
+app.get("/api/empty-database", (req, res, next) => {
+  fs.writeFileSync(getFilePath(), JSON.stringify({ locations: [] }));
   res.sendStatus(200);
 });
 
+app.use(express.static(path.resolve(__dirname, "../../client/", "public")));
+
 app.get("*", (request, response) => {
   response.sendFile(
-    path.resolve(__dirname, "../../client", "public/index.html")
+    path.resolve(__dirname, "../../client/", "public/index.html")
   );
 });
 
