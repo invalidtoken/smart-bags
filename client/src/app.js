@@ -1,5 +1,35 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Component } from "react";
 import ReactDOM from "react-dom";
+import ReactMapGL from "react-map-gl";
+
+let MAPBOXAPITOKEN =
+  "pk.eyJ1IjoiY29kZWl0c2FoaWwiLCJhIjoiY2ppdXBpd2M5MmdoeTNxbWY2bjE3YjdkciJ9.H-1BuVbMltskdDyx25t0Cw";
+
+class Map extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      viewport: {
+        width: 400,
+        height: 400,
+        latitude: 28.6216,
+        longitude: 77.0551,
+        zoom: 14
+      }
+    };
+  }
+
+  render() {
+    return (
+      <ReactMapGL
+        {...this.state.viewport}
+        mapboxApiAccessToken={MAPBOXAPITOKEN}
+        mapStyle="mapbox://styles/codeitsahil/ck13yds5c0k4r1clmitogdcy9"
+        onViewportChange={viewport => this.setState({ viewport })}
+      />
+    );
+  }
+}
 
 function App(props) {
   useEffect(() => {
@@ -21,8 +51,7 @@ function App(props) {
   });
   return (
     <div>
-      <h1>{props.heading}</h1>
-      <p>{props.para}</p>
+      <Map />
     </div>
   );
 }
