@@ -12,34 +12,21 @@ app.get("/api/data", (req, res) => {
 });
 
 app.get("/api/store-location", (req, res) => {
-  let data = JSON.parse(fs.readFileSync(getFilePath(), "utf-8"));
-  data.locations.push(req.query);
-  fs.writeFileSync(getFilePath(), JSON.stringify(data));
-  res.sendStatus(200);
-});
-
-app.post(
-  "/api/store-location",
-  (req, res, next) => {
-    // time, lat, lon
-    let string = "";
-    req.on("data", chunk => {
-      string += chunk;
-    });
-
-    req.on("end", () => {
-      let arr = string.split(",");
-      req.body = { time: arr[0], lat: arr[1], lon: arr[2] };
-      next();
-    });
-  },
-  (req, res) => {
-    let data = JSON.parse(fs.readFileSync(getFilePath(), "utf-8"));
-    data.locations.push(req.body);
-    fs.writeFileSync("./data.json", JSON.stringify(data));
-    res.sendStatus(200);
+  try {
+    let { time, lat, lon } = req.query;
+    if (time && lat && lon) {
+      let data = JSON.parse(fs.readFileSync(getFilePath(), "utf-8"));
+      console.log(req.query);
+      data.locations.push(req.query);
+      fs.writeFileSync(getFilePath(), JSON.stringify(data));
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(400);
+    }
+  } catch (e) {
+    res.sendStatus(400);
   }
-);
+});
 
 app.get("/api/empty-database", (req, res, next) => {
   fs.writeFileSync(getFilePath(), JSON.stringify({ locations: [] }));
